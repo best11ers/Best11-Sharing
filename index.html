@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>最佳11人阵型分享工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang SC', 'HarmonyOS Sans', 'Helvetica Neue', Arial, system-ui, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a1f1a 0%, #0F2A22 50%, #163E33 100%);
+            color: #e8e8e8;
+            line-height: 1.6;
+            padding: 8px 5px 15px;
+            -webkit-text-size-adjust: 100%;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px 0 10px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 15%;
+            right: 15%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+            color: #e8e8e8;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .subtitle {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+        
+        .share-hint {
+            background: rgba(61, 220, 151, 0.9);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #0a1f1a;
+            font-weight: 600;
+            display: none;
+            margin: 0 auto;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 200px;
+        }
+        
+        .formation-selector {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .formation-selector label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #e8e8e8;
+            font-size: 0.9rem;
+        }
+        
+        .formation-selector select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.4);
+            color: #e8e8e8;
+            transition: all 0.2s ease;
+        }
+        
+        .formation-selector select:focus {
+            outline: none;
+            border-color: #3DDC97;
+            box-shadow: 0 0 0 2px rgba(61, 220, 151, 0.2);
+        }
+        
+        .formation-info {
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #3DDC97;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .pitch-container {
+            background: linear-gradient(145deg, #0F2A22 0%, #163E33 100%);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .pitch {
+            height: 520px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(30, 80, 60, 0.3) 0%, transparent 70%),
+                linear-gradient(0deg, transparent 49%, rgba(255,255,255,0.03) 50%, transparent 51%),
+                linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.03) 50%, transparent 51%);
+        }
+        
+        .pitch-line {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .center-line {
+            top: 0;
+            left: 50%;
+            width: 1px;
+            height: 100%;
+            transform: translateX(-50%);
+        }
+        
+        .center-circle {
+            top: 50%;
+            left: 50%;
+            width: 70px;
+            height: 70px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .penalty-area {
+            position: absolute;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .penalty-area-top {
+            top: 0;
+            left: 50%;
+            width: 140px;
+            height: 70px;
+            transform: translateX(-50%);
+        }
+        
+        .penalty-area-bottom {
+            bottom: 0;
+            left: 50%;
+            width: 140px;
+            height: 70px;
+            transform: translateX(-50%);
+        }
+        
+        .position-group {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: nowrap;
+            padding: 0 5px;
+        }
+        
+        .goalkeeper-group {
+            height: 12%;
+            min-height: 65px;
+            padding-top: 5px;
+        }
+        
+        .defenders-group {
+            height: 16%;
+            min-height: 70px;
+        }
+        
+        .defensive-midfielders-group {
+            height: 14%;
+            min-height: 65px;
+        }
+        
+        .midfielders-group {
+            height: 16%;
+            min-height: 70px;
+        }
+        
+        .attacking-midfielders-group {
+            height: 14%;
+            min-height: 65px;
+        }
+        
+        .forwards-group {
+            height: 12%;
+            min-height: 65px;
+            padding-bottom: 5px;
+        }
+        
+        .player-position {
+            width: 70px;
+            height: 70px;
+            margin: 0 4px 8px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+            text-align: center;
+            position: relative;
+            padding: 8px 4px;
+            flex-shrink: 0;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .player-position:hover {
+            background: rgba(0, 0, 0, 0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .player-position.active {
+            transform: scale(1.05);
+            border-color: #3DDC97;
+            box-shadow: 0 0 0 2px rgba(61, 220, 151, 0.3), 0 5px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .position-name {
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.1;
+            letter-spacing: 0.5px;
+        }
+        
+        .player-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            line-height: 1.1;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .player-empty {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+        
+        .modal-content {
+            background: linear-gradient(145deg, #1a3a2e 0%, #0F2A22 100%);
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 320px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #3DDC97;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            color: #e8e8e8;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-input:focus {
+            outline: none;
+            border-color: #3DDC97;
+            box-shadow: 0 0 0 2px rgba(61, 220, 151, 0.2);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        
+        .modal-button {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            flex: 1;
+            transition: all 0.2s ease;
+        }
+        
+        .delete-button {
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+        }
+        
+        .delete-button:hover {
+            background: rgba(231, 76, 60, 1);
+            transform: translateY(-2px);
+        }
+        
+        .confirm-button {
+            background: rgba(61, 220, 151, 0.9);
+            color: #0a1f1a;
+        }
+        
+        .confirm-button:hover {
+            background: rgba(61, 220, 151, 1);
+            transform: translateY(-2px);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: #a0a0a0;
+            padding: 10px;
+        }
+        
+        /* 针对小屏幕手机的优化 */
+        @media (max-width: 360px) {
+            .player-position {
+                width: 60px;
+                height: 60px;
+                margin: 0 3px 6px;
+            }
+            
+            .player-name {
+                font-size: 0.8rem;
+            }
+            
+            .position-name {
+                font-size: 0.65rem;
+            }
+            
+            .pitch {
+                height: 480px;
+            }
+        }
+        
+        /* 针对5个球员在一行的情况 */
+        .five-players .player-position {
+            width: 58px;
+            height: 58px;
+            margin: 0 2px 6px;
+        }
+        
+        .five-players .player-name {
+            font-size: 0.75rem;
+        }
+        
+        .five-players .position-name {
+            font-size: 0.65rem;
+        }
+        
+        /* 针对6个球员在一行的情况 */
+        .six-players .player-position {
+            width: 54px;
+            height: 54px;
+            margin: 0 2px 6px;
+        }
+        
+        .six-players .player-name {
+            font-size: 0.7rem;
+        }
+        
+        .six-players .position-name {
+            font-size: 0.6rem;
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+            }
+            
+            .pitch {
+                height: 620px;
+            }
+            
+            .player-position {
+                width: 80px;
+                height: 80px;
+                margin: 0 6px 10px;
+            }
+            
+            .player-name {
+                font-size: 1rem;
+            }
+            
+            .position-name {
+                font-size: 0.8rem;
+            }
+            
+            .five-players .player-position {
+                width: 72px;
+                height: 72px;
+            }
+            
+            .six-players .player-position {
+                width: 68px;
+                height: 68px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>最佳11人阵型分享工具</h1>
+            <div class="subtitle">#11人战术板</div>
+            <div class="share-hint" id="share-hint">截图与其它经理人分享</div>
+        </header>
+        
+        <div class="formation-selector">
+            <label for="formation-select">阵型选择</label>
+            <select id="formation-select">
+                <option value="">请选择阵型</option>
+                <!-- 阵型选项将动态生成 -->
+            </select>
+        </div>
+        
+        <div class="formation-info" id="formation-info">
+            请选择阵型以查看详细布局
+        </div>
+        
+        <div class="pitch-container">
+            <div class="pitch">
+                <div class="pitch-line center-line"></div>
+                <div class="pitch-line center-circle"></div>
+                <div class="pitch-line penalty-area penalty-area-top"></div>
+                <div class="pitch-line penalty-area penalty-area-bottom"></div>
+                
+                <!-- 前锋区域 -->
+                <div class="position-group forwards-group" id="forwards-group">
+                    <!-- 前锋位置将动态生成 -->
+                </div>
+                
+                <!-- 前腰区域 -->
+                <div class="position-group attacking-midfielders-group" id="attacking-midfielders-group">
+                    <!-- 前腰位置将动态生成 -->
+                </div>
+                
+                <!-- 前卫区域 -->
+                <div class="position-group midfielders-group" id="midfielders-group">
+                    <!-- 前卫位置将动态生成 -->
+                </div>
+                
+                <!-- 后腰区域 -->
+                <div class="position-group defensive-midfielders-group" id="defensive-midfielders-group">
+                    <!-- 后腰位置将动态生成 -->
+                </div>
+                
+                <!-- 后卫区域 -->
+                <div class="position-group defenders-group" id="defenders-group">
+                    <!-- 后卫位置将动态生成 -->
+                </div>
+                
+                <!-- 门将区域 -->
+                <div class="position-group goalkeeper-group" id="goalkeeper-group">
+                    <!-- 门将位置将动态生成 -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>准备打造你的最佳11人！</p>
+        </footer>
+    </div>
+
+    <!-- 球员编辑模态框 -->
+    <div class="modal" id="player-modal">
+        <div class="modal-content">
+            <div class="modal-title" id="modal-title">编辑球员</div>
+            <input type="text" class="modal-input" id="player-input" placeholder="请输入球员姓名" maxlength="10">
+            <div class="modal-buttons">
+                <button class="modal-button delete-button" id="delete-button">删除</button>
+                <button class="modal-button confirm-button" id="confirm-button">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 足球阵型数据
+        const formationData = [
+            { name: "352防守", positions: ["门将", "中后卫*3", "左前卫", "中前卫", "右前卫", "后腰*2", "中锋*2"] },
+            { name: "361进攻", positions: ["门将", "中后卫*3", "左前卫", "中前卫*2", "右前卫", "前腰*2", "中锋"] },
+            { name: "361防守", positions: ["门将", "中后卫*3", "左前卫", "后腰*2", "右前卫", "前腰*2", "中锋"] },
+            { name: "352平行", positions: ["门将", "中后卫*3", "左前卫", "中前卫*3", "右前卫", "中锋*2"] },
+            { name: "352进攻", positions: ["门将", "中后卫*3", "左前卫", "中前卫*2", "右前卫", "前腰", "中锋*2"] },
+            { name: "343进攻", positions: ["门将", "中后卫*3", "后腰", "左前卫", "中前卫", "右前卫", "中锋*3"] },
+            { name: "343平行", positions: ["门将", "中后卫*3", "左前卫", "中前卫*2", "右前卫", "左边锋", "中锋", "右边锋"] },
+            { name: "334", positions: ["门将", "中后卫*3", "左前卫", "中前卫", "右前卫", "左边锋", "中锋*2", "右边锋"] },
+            { name: "352", positions: ["门将", "中后卫*3", "左前卫", "中前卫*2", "右前卫", "前腰", "左边锋", "右边锋"] },
+            { name: "361平行", positions: ["门将", "中后卫*3", "后腰*2", "左前卫", "中前卫*2", "右前卫", "中锋"] },
+            { name: "343菱形", positions: ["门将", "中后卫*3", "左前卫", "后腰", "前腰", "右前卫", "左边锋", "中锋", "右边锋"] },
+            { name: "352拖后", positions: ["门将", "中后卫*3", "后腰", "左前卫", "中前卫*2", "右前卫", "中锋*2"] },
+            { name: "433防守", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "后腰", "中前卫*2", "左边锋", "中锋", "右边锋"] },
+            { name: "442平行", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "左前卫", "中前卫*2", "右前卫", "中锋*2"] },
+            { name: "4231", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "后腰*2", "左前卫", "前腰", "右前卫", "中锋"] },
+            { name: "4141", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "后腰", "左前卫", "中前卫*2", "右前卫", "中锋"] },
+            { name: "4411", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "左前卫", "中前卫*2", "右前卫", "前腰", "中锋"] },
+            { name: "442菱形", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "左前卫", "后腰", "前腰", "右前卫", "中锋*2"] },
+            { name: "451", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "左前卫", "中前卫*3", "右前卫", "中锋"] },
+            { name: "433平行", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "中前卫*3", "左边锋", "中锋", "右边锋"] },
+            { name: "433进攻", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "中前卫*2", "前腰", "左边锋", "中锋", "右边锋"] },
+            { name: "4231窄", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "后腰*2", "前腰*3", "中锋"] },
+            { name: "4312", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "中前卫*3", "前腰", "中锋*2"] },
+            { name: "41212", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "后腰", "中前卫*2", "前腰", "中锋*3"] },
+            { name: "424防守", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "后腰*2", "左边锋", "中锋*2", "右边锋"] },
+            { name: "4222", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "中前卫*2", "前腰*2", "中锋*2"] },
+            { name: "424", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "中前卫*2", "左边锋", "中锋*2", "右边锋"] },
+            { name: "4321", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "后腰*3", "前腰*2", "中锋"] },
+            { name: "4123", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "后腰", "前腰*2", "左边锋", "中锋", "右边锋"] },
+            { name: "433宽", positions: ["门将", "左后卫", "中后卫*2", "右后卫", "左前卫", "中前卫", "右前卫", "左边锋", "中锋", "右边锋"] },
+            { name: "541平行", positions: ["门将", "左后卫", "中后卫*3", "右后卫", "左前卫", "中前卫*3", "右前卫", "中锋"] },
+            { name: "541菱形", positions: ["门将", "左后卫", "中后卫*3", "右后卫", "左前卫", "后腰", "前腰", "右前卫", "中锋"] },
+            { name: "532进攻", positions: ["门将", "左后卫", "中后卫*3", "右后卫", "中前卫*2", "前腰", "中锋*2"] },
+            { name: "532平行", positions: ["门将", "左后卫", "中后卫*3", "右后卫", "中前卫*3", "中锋*2"] },
+            { name: "532防守", positions: ["门将", "左后卫", "中后卫*3", "右后卫", "后腰*2", "前腰", "中锋*2"] },
+            { name: "532", positions: ["门将", "左后卫", "中后卫*3", "右后卫", "后腰*2", "中前卫", "中锋"] },
+            { name: "523中轴", positions: ["门将", "左后卫", "中后卫*3", "右后卫", "后腰", "前腰", "左边锋", "中锋", "右边锋"] },
+            { name: "523", positions: ["门将", "左后卫", "中后卫*3", "右后卫", "中前卫*2", "左边锋", "中锋", "右边锋"] },
+            { name: "WW阵型", positions: ["门将", "中后卫*2", "左前卫", "中前卫", "右前卫", "前腰*2", "中锋*3"] },
+            { name: "235进攻", positions: ["门将", "中后卫*2", "左前卫", "后腰", "右前卫", "左边锋", "中锋*3", "右边锋"] },
+            { name: "262平行", positions: ["门将", "中后卫*2", "左前卫", "后腰*2", "前腰*2", "右前卫", "中锋*2"] }
+        ];
+
+        // 当前编辑的位置元素
+        let currentPositionElement = null;
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', function() {
+            // 填充阵型选择下拉框
+            const formationSelect = document.getElementById('formation-select');
+            formationData.forEach(formation => {
+                const option = document.createElement('option');
+                option.value = formation.name;
+                option.textContent = formation.name;
+                formationSelect.appendChild(option);
+            });
+            
+            // 添加阵型选择事件监听
+            formationSelect.addEventListener('change', function() {
+                const selectedFormation = this.value;
+                if (selectedFormation) {
+                    displayFormation(selectedFormation);
+                } else {
+                    document.getElementById('formation-info').textContent = "请选择阵型以查看详细布局";
+                    clearPitch();
+                }
+            });
+            
+            // 默认显示第一个阵型
+            if (formationData.length > 0) {
+                formationSelect.value = formationData[0].name;
+                displayFormation(formationData[0].name);
+            }
+            
+            // 模态框按钮事件
+            document.getElementById('confirm-button').addEventListener('click', function() {
+                const playerName = document.getElementById('player-input').value.trim();
+                if (currentPositionElement) {
+                    const playerNameElement = currentPositionElement.querySelector('.player-name');
+                    if (playerName) {
+                        playerNameElement.textContent = playerName;
+                        playerNameElement.style.display = 'block';
+                        currentPositionElement.querySelector('.player-empty').style.display = 'none';
+                    } else {
+                        playerNameElement.textContent = '';
+                        playerNameElement.style.display = 'none';
+                        currentPositionElement.querySelector('.player-empty').style.display = 'block';
+                    }
+                    closeModal();
+                    checkAllPlayersFilled();
+                }
+            });
+            
+            document.getElementById('delete-button').addEventListener('click', function() {
+                if (currentPositionElement) {
+                    const playerNameElement = currentPositionElement.querySelector('.player-name');
+                    playerNameElement.textContent = '';
+                    playerNameElement.style.display = 'none';
+                    currentPositionElement.querySelector('.player-empty').style.display = 'block';
+                    closeModal();
+                    checkAllPlayersFilled();
+                }
+            });
+            
+            // 点击模态框外部关闭
+            document.getElementById('player-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            // 按ESC键关闭模态框
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+        });
+
+        // 显示选定阵型
+        function displayFormation(formationName) {
+            const formation = formationData.find(f => f.name === formationName);
+            if (!formation) return;
+            
+            // 更新阵型信息
+            document.getElementById('formation-info').textContent = formationName;
+            
+            // 清空现有位置
+            clearPitch();
+            
+            // 按照足球阵型逻辑分组位置
+            const positionsByGroup = {
+                goalkeeper: [],
+                defenders: [],
+                defensiveMidfielders: [],  // 后腰
+                midfielders: [],           // 前卫
+                attackingMidfielders: [],  // 前腰
+                forwards: []
+            };
+            
+            // 按位置类型分组
+            formation.positions.forEach(pos => {
+                let positionName = pos;
+                let count = 1;
+                
+                // 检查是否有数量标记
+                if (pos.includes('*')) {
+                    const parts = pos.split('*');
+                    positionName = parts[0];
+                    count = parseInt(parts[1]);
+                }
+                
+                // 根据位置名称分类，遵循足球阵型逻辑
+                if (positionName.includes('门将')) {
+                    positionsByGroup.goalkeeper.push({ name: positionName, count });
+                } else if (positionName.includes('后卫')) {
+                    positionsByGroup.defenders.push({ name: positionName, count });
+                } else if (positionName.includes('后腰')) {
+                    positionsByGroup.defensiveMidfielders.push({ name: positionName, count });
+                } else if (positionName.includes('前腰')) {
+                    positionsByGroup.attackingMidfielders.push({ name: positionName, count });
+                } else if (positionName.includes('前卫') || positionName.includes('中前卫')) {
+                    positionsByGroup.midfielders.push({ name: positionName, count });
+                } else {
+                    positionsByGroup.forwards.push({ name: positionName, count });
+                }
+            });
+            
+            // 在球场上按照正确顺序创建位置
+            // 从后往前：门将 -> 后卫 -> 后腰 -> 前卫 -> 前腰 -> 前锋
+            createPositions('goalkeeper-group', positionsByGroup.goalkeeper);
+            createPositions('defenders-group', positionsByGroup.defenders);
+            createPositions('defensive-midfielders-group', positionsByGroup.defensiveMidfielders);
+            createPositions('midfielders-group', positionsByGroup.midfielders);
+            createPositions('attacking-midfielders-group', positionsByGroup.attackingMidfielders);
+            createPositions('forwards-group', positionsByGroup.forwards);
+            
+            // 根据每行球员数量添加特殊样式类
+            applyRowSpecificStyles();
+            
+            // 重置分享提示
+            document.getElementById('share-hint').style.display = 'none';
+        }
+
+        // 清空球场上的所有位置
+        function clearPitch() {
+            const groups = [
+                'goalkeeper-group', 
+                'defenders-group', 
+                'defensive-midfielders-group',
+                'midfielders-group', 
+                'attacking-midfielders-group',
+                'forwards-group'
+            ];
+            
+            groups.forEach(groupId => {
+                const group = document.getElementById(groupId);
+                group.innerHTML = '';
+                group.className = 'position-group'; // 重置类名
+                if (groupId === 'goalkeeper-group') group.classList.add('goalkeeper-group');
+                if (groupId === 'defenders-group') group.classList.add('defenders-group');
+                if (groupId === 'defensive-midfielders-group') group.classList.add('defensive-midfielders-group');
+                if (groupId === 'midfielders-group') group.classList.add('midfielders-group');
+                if (groupId === 'attacking-midfielders-group') group.classList.add('attacking-midfielders-group');
+                if (groupId === 'forwards-group') group.classList.add('forwards-group');
+            });
+        }
+
+        // 在指定分组中创建位置
+        function createPositions(groupId, positions) {
+            const group = document.getElementById(groupId);
+            
+            positions.forEach(pos => {
+                for (let i = 0; i < pos.count; i++) {
+                    const positionElement = document.createElement('div');
+                    positionElement.className = 'player-position';
+                    
+                    const positionName = document.createElement('div');
+                    positionName.className = 'position-name';
+                    positionName.textContent = pos.name;
+                    
+                    const playerName = document.createElement('div');
+                    playerName.className = 'player-name';
+                    playerName.style.display = 'none';
+                    
+                    const playerEmpty = document.createElement('div');
+                    playerEmpty.className = 'player-empty';
+                    playerEmpty.textContent = '—';
+                    
+                    positionElement.appendChild(positionName);
+                    positionElement.appendChild(playerName);
+                    positionElement.appendChild(playerEmpty);
+                    
+                    // 添加点击事件
+                    positionElement.addEventListener('click', function() {
+                        // 移除其他元素的active类
+                        document.querySelectorAll('.player-position').forEach(el => {
+                            el.classList.remove('active');
+                        });
+                        // 添加当前元素的active类
+                        this.classList.add('active');
+                        openModal(this, pos.name);
+                    });
+                    
+                    group.appendChild(positionElement);
+                }
+            });
+        }
+
+        // 根据每行球员数量应用特殊样式
+        function applyRowSpecificStyles() {
+            const groups = [
+                'goalkeeper-group', 
+                'defenders-group', 
+                'defensive-midfielders-group',
+                'midfielders-group', 
+                'attacking-midfielders-group',
+                'forwards-group'
+            ];
+            
+            groups.forEach(groupId => {
+                const group = document.getElementById(groupId);
+                const playerCount = group.children.length;
+                
+                // 移除已有的特殊样式类
+                group.classList.remove('five-players', 'six-players');
+                
+                // 根据球员数量添加特殊样式
+                if (playerCount >= 5 && playerCount <= 6) {
+                    group.classList.add('five-players');
+                } else if (playerCount > 6) {
+                    group.classList.add('six-players');
+                }
+            });
+        }
+
+        // 打开编辑模态框
+        function openModal(positionElement, positionName) {
+            currentPositionElement = positionElement;
+            const modal = document.getElementById('player-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const playerInput = document.getElementById('player-input');
+            const playerName = positionElement.querySelector('.player-name').textContent;
+            
+            modalTitle.textContent = `编辑${positionName}`;
+            playerInput.value = playerName;
+            playerInput.focus();
+            modal.style.display = 'flex';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            const modal = document.getElementById('player-modal');
+            modal.style.display = 'none';
+            document.getElementById('player-input').value = '';
+            
+            // 移除所有active类
+            document.querySelectorAll('.player-position').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            currentPositionElement = null;
+        }
+
+        // 检查是否所有球员都已填写
+        function checkAllPlayersFilled() {
+            const playerPositions = document.querySelectorAll('.player-position');
+            let allFilled = true;
+            
+            playerPositions.forEach(position => {
+                const playerName = position.querySelector('.player-name').textContent.trim();
+                if (!playerName) {
+                    allFilled = false;
+                }
+            });
+            
+            if (allFilled && playerPositions.length === 11) {
+                document.getElementById('share-hint').style.display = 'block';
+            } else {
+                document.getElementById('share-hint').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
